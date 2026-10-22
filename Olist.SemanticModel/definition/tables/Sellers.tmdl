@@ -1,0 +1,96 @@
+table Sellers
+	lineageTag: 54025142-da2e-582a-b544-db310a1f3a02
+
+	column seller_id
+		dataType: string
+		isHidden
+		lineageTag: e3868727-90e5-5a7f-b284-d285c7c150dd
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_code
+		dataType: string
+		lineageTag: 1326c79a-703a-5331-809e-5f9661456df4
+		summarizeBy: none
+		sourceColumn: seller_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_city
+		dataType: string
+		lineageTag: 4fb6028a-31ea-54ec-84b6-02786b32b4eb
+		summarizeBy: none
+		sourceColumn: seller_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_state
+		dataType: string
+		lineageTag: 08423cc6-4344-5e14-b545-2d4ea0f19541
+		summarizeBy: none
+		sourceColumn: seller_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_region
+		dataType: string
+		lineageTag: 0c00adbc-e09a-5c36-9591-6c64cc42e8cb
+		summarizeBy: none
+		sourceColumn: seller_region
+
+		annotation SummarizationSetBy = Automatic
+
+	column revenue_scope
+		dataType: double
+		formatString: #,0.00
+		lineageTag: cf80c07f-7c65-5ba9-a72e-078aa29f93cd
+		summarizeBy: none
+		sourceColumn: revenue_scope
+
+		annotation SummarizationSetBy = Automatic
+
+	column revenue_tier
+		dataType: string
+		lineageTag: 02d37b3e-1524-5eef-a6cd-2fc059106178
+		summarizeBy: none
+		sourceColumn: revenue_tier
+		sortByColumn: revenue_tier_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column revenue_tier_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 065e116a-d359-5d41-8f9d-ff7da3ad765f
+		summarizeBy: none
+		sourceColumn: revenue_tier_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_sale_date
+		dataType: dateTime
+		formatString: dd/MM/yyyy
+		lineageTag: 510ef9d1-72c1-5228-b6b8-5ec14fae6432
+		summarizeBy: none
+		sourceColumn: first_sale_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Sellers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_seller.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Nulls = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"seller_id", "seller_code", "seller_city", "seller_state", "seller_region", "revenue_tier"}),
+				    Typed = Table.TransformColumnTypes(Nulls, {{"seller_id", type text}, {"seller_code", type text}, {"seller_city", type text}, {"seller_state", type text}, {"seller_region", type text}, {"revenue_scope", type number}, {"revenue_tier", type text}, {"revenue_tier_sort", Int64.Type}, {"first_sale_date", type date}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

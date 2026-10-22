@@ -1,0 +1,80 @@
+table Payments
+	lineageTag: d22d0f37-6008-5866-83cb-32809e8beec1
+
+	column order_id
+		dataType: string
+		isHidden
+		lineageTag: db5158ac-fcf4-5425-a34f-611fbdb92ab4
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_sequential
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4ea4f5c3-42a3-562c-bdeb-b61daa548a72
+		summarizeBy: none
+		sourceColumn: payment_sequential
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_type
+		dataType: string
+		lineageTag: 412c5d14-6346-55c7-bb57-1ff37c850e1f
+		summarizeBy: none
+		sourceColumn: payment_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_installments
+		dataType: int64
+		formatString: 0
+		lineageTag: b3141577-5759-5589-8896-be061ddc841c
+		summarizeBy: none
+		sourceColumn: payment_installments
+
+		annotation SummarizationSetBy = Automatic
+
+	column installments_bucket
+		dataType: string
+		lineageTag: dd97aeed-9180-5a42-a21d-88fec1cff8bc
+		summarizeBy: none
+		sourceColumn: installments_bucket
+		sortByColumn: installments_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column installments_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9c2a4365-332d-5e4a-8f6c-5f25315ec9dd
+		summarizeBy: none
+		sourceColumn: installments_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e46aa09f-1afc-575a-8ee5-1840b81f3400
+		summarizeBy: sum
+		sourceColumn: payment_value
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Payments = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_payments.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Nulls = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"order_id", "payment_type", "installments_bucket"}),
+				    Typed = Table.TransformColumnTypes(Nulls, {{"order_id", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"installments_bucket", type text}, {"installments_sort", Int64.Type}, {"payment_value", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

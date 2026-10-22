@@ -1,0 +1,96 @@
+table Products
+	lineageTag: 768b9991-41cd-557e-878d-a75fe9edae27
+
+	column product_id
+		dataType: string
+		isHidden
+		lineageTag: c9aa8bf7-9108-5b4b-805e-f2138fcee53b
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 954fc066-4511-54e2-a1d7-9618a9558d21
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column category_pt
+		dataType: string
+		lineageTag: dcfd0a36-f1bc-5ece-9e7c-fc1b514d35c6
+		summarizeBy: none
+		sourceColumn: category_pt
+
+		annotation SummarizationSetBy = Automatic
+
+	column photos_qty
+		dataType: int64
+		formatString: 0
+		lineageTag: dd13857b-b43e-5c43-b9f9-68fc7ed28a15
+		summarizeBy: none
+		sourceColumn: photos_qty
+
+		annotation SummarizationSetBy = Automatic
+
+	column photos_bucket
+		dataType: string
+		lineageTag: a73e5fff-5d27-52f7-b344-7d9d264db9f8
+		summarizeBy: none
+		sourceColumn: photos_bucket
+		sortByColumn: photos_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column photos_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 84bf4190-8b3a-5b19-8eb2-41119570563b
+		summarizeBy: none
+		sourceColumn: photos_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column weight_g
+		dataType: double
+		formatString: #,0.00
+		lineageTag: a69e371f-d8d2-5927-a60f-bbb8d9aa8796
+		summarizeBy: none
+		sourceColumn: weight_g
+
+		annotation SummarizationSetBy = Automatic
+
+	column volume_cm3
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 57851705-54dc-5d13-b23a-4d035e4a44f6
+		summarizeBy: none
+		sourceColumn: volume_cm3
+
+		annotation SummarizationSetBy = Automatic
+
+	column description_length
+		dataType: int64
+		formatString: 0
+		lineageTag: b5ed9179-f261-5c31-bf8f-20bab21bb19f
+		summarizeBy: none
+		sourceColumn: description_length
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Products = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_product.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Nulls = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"product_id", "category", "category_pt", "photos_bucket"}),
+				    Typed = Table.TransformColumnTypes(Nulls, {{"product_id", type text}, {"category", type text}, {"category_pt", type text}, {"photos_qty", Int64.Type}, {"photos_bucket", type text}, {"photos_sort", Int64.Type}, {"weight_g", type number}, {"volume_cm3", type number}, {"description_length", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

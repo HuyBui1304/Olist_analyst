@@ -1,0 +1,81 @@
+table Customers
+	lineageTag: 4fc166fd-430d-5a3e-886e-7de9ddc41c5f
+
+	column customer_unique_id
+		dataType: string
+		isHidden
+		lineageTag: e9f0bf62-7766-5e1f-b74f-6db8ba735bd8
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_date
+		dataType: dateTime
+		formatString: dd/MM/yyyy
+		lineageTag: 9f903693-7d33-50f7-acc5-5bea0a25cbf8
+		summarizeBy: none
+		sourceColumn: first_order_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column n_orders
+		dataType: int64
+		formatString: 0
+		lineageTag: c77a9d83-6a14-5f70-afe2-63c67ca89bbe
+		summarizeBy: none
+		sourceColumn: n_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column lifetime_value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 5b171aef-832e-5785-b8eb-e6c733c05a6d
+		summarizeBy: none
+		sourceColumn: lifetime_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_count_group
+		dataType: string
+		lineageTag: b323f311-77c2-57e3-87c4-5ab3f48dfc41
+		summarizeBy: none
+		sourceColumn: order_count_group
+		sortByColumn: order_count_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_count_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b14241ef-859d-5c0b-8d01-83fd9f13938a
+		summarizeBy: none
+		sourceColumn: order_count_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_type
+		dataType: string
+		lineageTag: de5fbc34-93ad-5981-a701-dc815f8f9321
+		summarizeBy: none
+		sourceColumn: customer_type
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_customer.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Nulls = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"customer_unique_id", "order_count_group", "customer_type"}),
+				    Typed = Table.TransformColumnTypes(Nulls, {{"customer_unique_id", type text}, {"first_order_date", type date}, {"n_orders", Int64.Type}, {"lifetime_value", type number}, {"order_count_group", type text}, {"order_count_sort", Int64.Type}, {"customer_type", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

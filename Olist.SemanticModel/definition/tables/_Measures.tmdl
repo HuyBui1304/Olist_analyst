@@ -1,0 +1,1294 @@
+table _Measures
+	lineageTag: 0258437f-0ec3-51eb-9353-9d5493fe6aad
+
+	measure 'Total Orders' = COUNTROWS(Orders)
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: b0682c34-cd32-5329-86a4-c04965eabb69
+
+	measure 'Delivered Orders' = CALCULATE(COUNTROWS(Orders), Orders[is_delivered] = 1)
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: 8a730261-4dd6-5952-adf7-e0b0ef7e2821
+
+	measure 'Delivered Sales' = CALCULATE(SUM(Orders[order_value]), Orders[is_delivered] = 1)
+		formatString: R$ #,0
+		displayFolder: 1. Overview
+		lineageTag: a46b5ae1-123c-558f-ae8d-5f87d8017264
+
+	measure 'Avg Order Value' = DIVIDE([Delivered Sales], [Delivered Orders])
+		formatString: R$ #,0.00
+		displayFolder: 1. Overview
+		lineageTag: 36aa9d8d-d53c-5a34-9827-36d06f8259ee
+
+	measure 'Canceled Orders' = CALCULATE(COUNTROWS(Orders), Orders[is_canceled] = 1)
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: fa948947-136e-570c-a8ed-acdeeb08640d
+
+	measure 'Cancellation Rate' = DIVIDE([Canceled Orders], [Total Orders])
+		formatString: 0.00%
+		displayFolder: 1. Overview
+		lineageTag: ebb586e9-9187-5edc-8ecd-e3536ecf6ff8
+
+	measure 'Undelivered Orders' = CALCULATE(COUNTROWS(Orders), Orders[is_delivered] = 0)
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: 5e3e47b4-78db-5a49-917c-6a41a34122c4
+
+	measure 'Orders Canceled' = CALCULATE(COUNTROWS(Orders), Orders[order_status] = "canceled")
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: 6310cfee-0905-5d25-a6b3-005680c2ab54
+
+	measure 'Orders Unavailable' = CALCULATE(COUNTROWS(Orders), Orders[order_status] = "unavailable")
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: c41cfb6d-e080-513a-b6ab-8b37f1345de6
+
+	measure 'Orders In Progress' = CALCULATE(COUNTROWS(Orders), Orders[status_sort] = 4)
+		formatString: #,0
+		displayFolder: 1. Overview
+		lineageTag: 7b650666-c774-58a5-ad87-df117b8862bf
+
+	measure 'Sales Share (State)' = DIVIDE([Delivered Sales], CALCULATE([Delivered Sales], REMOVEFILTERS(States)))
+		formatString: 0.0%
+		displayFolder: 1. Overview
+		lineageTag: af10d73e-ab07-5f30-b499-5188736adb8c
+
+	measure 'Avg Delivery Days' = AVERAGE(Orders[delivery_days])
+		formatString: #,0.0
+		displayFolder: 2. Delivery
+		lineageTag: ef225239-c1a9-545c-a59f-de4388eda27e
+
+	measure 'Avg Estimated Days' = CALCULATE(AVERAGE(Orders[estimated_days]), Orders[is_delivered] = 1)
+		formatString: #,0.0
+		displayFolder: 2. Delivery
+		lineageTag: 3f1628c1-b554-5c03-a757-fd1c5a2a3635
+
+	measure 'Late Delivery Rate' = AVERAGE(Orders[is_late])
+		formatString: 0.0%
+		displayFolder: 2. Delivery
+		lineageTag: b1c1ee6b-c3f2-5b3e-ab7e-655b6a6a3ae0
+
+	measure 'On-Time Delivery Rate' = IF(NOT ISBLANK([Late Delivery Rate]), 1 - [Late Delivery Rate])
+		formatString: 0.0%
+		displayFolder: 2. Delivery
+		lineageTag: 64a284a0-885a-57ff-87cd-bcbab898cbb5
+
+	measure 'Late Orders' = CALCULATE(COUNTROWS(Orders), Orders[is_late] = 1)
+		formatString: #,0
+		displayFolder: 2. Delivery
+		lineageTag: 9ebc594a-d704-5f8d-9dfc-8dc1ffd89f07
+
+	measure 'Avg Days Late' = CALCULATE(AVERAGE(Orders[delay_days]), Orders[is_late] = 1)
+		formatString: #,0.0
+		displayFolder: 2. Delivery
+		lineageTag: 6ea0ba8c-dc54-5d1b-ad4c-c6ffe45c48f1
+
+	measure 'Avg Days Ahead of ETA' = -AVERAGE(Orders[delay_days])
+		formatString: #,0.0
+		displayFolder: 2. Delivery
+		lineageTag: de1e1dff-32a1-5df8-879d-3be3c476ba2e
+
+	measure 'Avg Approval Days' = CALCULATE(AVERAGE(Orders[approval_hours]) / 24, Orders[is_delivered] = 1)
+		formatString: #,0.0
+		displayFolder: 2. Delivery
+		lineageTag: e560beeb-8a2a-5aed-ab77-cc5bbce35303
+
+	measure 'Avg Seller Handling Days' = CALCULATE(AVERAGE(Orders[handling_days]), Orders[is_delivered] = 1)
+		formatString: #,0.0
+		displayFolder: 2. Delivery
+		lineageTag: 56a31790-2633-531a-80a5-a6ea0b88f05b
+
+	measure 'Avg Carrier Transit Days' = AVERAGE(Orders[transit_days])
+		formatString: #,0.0
+		displayFolder: 2. Delivery
+		lineageTag: 0aabc099-b3e6-5ad7-aa88-b199d57a6144
+
+	measure 'Freight-to-Value Ratio' = DIVIDE(CALCULATE(SUM(Orders[freight_value]), Orders[is_delivered] = 1), CALCULATE(SUM(Orders[items_value]), Orders[is_delivered] = 1))
+		formatString: 0.0%
+		displayFolder: 2. Delivery
+		lineageTag: 619e9ca8-4ac8-575d-9e35-4c55f80e29ae
+
+	measure 'Order Share (Delivery Time)' =
+			VAR n = COUNT(Orders[delivery_days])
+			RETURN IF(n > 0, DIVIDE(n, CALCULATE(COUNT(Orders[delivery_days]), REMOVEFILTERS(Orders[delivery_bucket], Orders[delivery_bucket_sort]))))
+		formatString: 0.0%
+		displayFolder: 2. Delivery
+		lineageTag: db82cdea-3240-5363-9285-78a414dbe0a0
+
+	measure 'Late Rate Color' = VAR r = [Late Delivery Rate] RETURN SWITCH(TRUE(), r >= 0.12, "#F26F6F", r >= 0.08, "#F7B531", "#C2FA5C")
+		displayFolder: 2. Delivery
+		lineageTag: 3df2d512-f7a1-5a36-aa85-ced781f90f33
+
+	measure 'Avg Review Score' = AVERAGE(Orders[review_score])
+		formatString: 0.00
+		displayFolder: 3. Customer Experience
+		lineageTag: 1c57a215-50e8-5d0e-868c-7e6a8e478299
+
+	measure Reviews = COUNT(Orders[review_score])
+		formatString: #,0
+		displayFolder: 3. Customer Experience
+		lineageTag: e9937730-4672-5c30-a59f-fb05c08a5225
+
+	measure '5-Star Rate' = DIVIDE(CALCULATE([Reviews], Orders[review_score] = 5), [Reviews])
+		formatString: 0.0%
+		displayFolder: 3. Customer Experience
+		lineageTag: fba182f5-6411-5c53-8df0-0ebc1d588943
+
+	measure 'Negative Review Rate' = DIVIDE(CALCULATE([Reviews], Orders[review_score] <= 2), [Reviews])
+		formatString: 0.0%
+		displayFolder: 3. Customer Experience
+		lineageTag: 87b47dec-a1fc-509f-9a7f-f04ce8feb378
+
+	measure 'Comment Rate' = DIVIDE(CALCULATE([Reviews], Orders[has_review_comment] = 1), [Reviews])
+		formatString: 0.0%
+		displayFolder: 3. Customer Experience
+		lineageTag: 9c965ef1-1d68-5c21-8dfa-7b630ea42274
+
+	measure 'Avg Score (Late Orders)' = CALCULATE([Avg Review Score], Orders[is_late] = 1)
+		formatString: 0.00
+		displayFolder: 3. Customer Experience
+		lineageTag: 84927425-26ca-5ec3-b10d-e1197c0a1a3d
+
+	measure 'Avg Score (On-Time Orders)' = CALCULATE([Avg Review Score], Orders[is_late] = 0)
+		formatString: 0.00
+		displayFolder: 3. Customer Experience
+		lineageTag: 7bd8d0e4-54e9-51ef-bfdf-db445501fd9d
+
+	measure 'Review Share' = IF([Reviews] > 0, DIVIDE([Reviews], CALCULATE([Reviews], REMOVEFILTERS(Orders[review_label], Orders[review_score]))))
+		formatString: 0.0%
+		displayFolder: 3. Customer Experience
+		lineageTag: fe568778-f2d5-5d56-9523-7d9587f1ce45
+
+	measure 'Avg Score (100+ Reviews)' = IF([Reviews] >= 100, [Avg Review Score])
+		formatString: 0.00
+		displayFolder: 3. Customer Experience
+		lineageTag: 20f6636f-08f2-5645-a7b2-dcf49c4c8c4c
+
+	measure 'Score Color' = VAR s = [Avg Review Score] RETURN SWITCH(TRUE(), ISBLANK(s), "#8C8C8C", s < 3, "#F26F6F", s < 4, "#F7B531", "#C2FA5C")
+		displayFolder: 3. Customer Experience
+		lineageTag: 9cdd0a21-90fb-5259-a581-1c623d479f01
+
+	measure 'Star Color' = VAR s = SELECTEDVALUE(Orders[review_score]) RETURN SWITCH(TRUE(), s <= 2, "#F26F6F", s = 3, "#F7B531", "#C2FA5C")
+		displayFolder: 3. Customer Experience
+		lineageTag: 61c0f001-d4d1-57a5-b45d-71af6872de4d
+
+	measure 'Item Sales' = CALCULATE(SUM(OrderItems[item_value]), Orders[is_delivered] = 1)
+		formatString: R$ #,0
+		displayFolder: 4. Sellers
+		lineageTag: a77f3e70-ba28-5b44-b7de-e95d19c8750e
+
+	measure 'Active Sellers' = DISTINCTCOUNT(OrderItems[seller_id])
+		formatString: #,0
+		displayFolder: 4. Sellers
+		lineageTag: d0f26026-3cf9-510d-91c5-9ca61538d8d7
+
+	measure 'New Sellers' =
+			VAR _min = MIN('Date'[Date]) VAR _max = MAX('Date'[Date])
+			RETURN CALCULATE([Active Sellers], KEEPFILTERS(FILTER(ALL(Sellers[first_sale_date]),
+			    Sellers[first_sale_date] >= _min && Sellers[first_sale_date] <= _max)))
+		formatString: #,0
+		displayFolder: 4. Sellers
+		lineageTag: df3898ed-51d9-5a6b-91bc-bd6815452e14
+
+	measure 'Sales per Seller' = DIVIDE([Item Sales], [Active Sellers])
+		formatString: R$ #,0
+		displayFolder: 4. Sellers
+		lineageTag: e33af54e-01b0-56ee-a91d-87e45deb22b4
+
+	measure 'Top 10% Seller Share' =
+			VAR _s = ADDCOLUMNS(VALUES(OrderItems[seller_id]), "@rev", [Item Sales])
+			VAR _k = ROUNDUP(COUNTROWS(_s) * 0.1, 0)
+			RETURN DIVIDE(SUMX(TOPN(_k, _s, [@rev], DESC), [@rev]), SUMX(_s, [@rev]))
+		formatString: 0.0%
+		displayFolder: 4. Sellers
+		lineageTag: 388e8fca-da30-5ca3-881c-4b52465607ac
+
+	measure 'Avg Seller Prep Days' = AVERAGE(Orders[handling_days])
+		formatString: #,0.0
+		displayFolder: 4. Sellers
+		lineageTag: cacedcb8-bc2d-5410-aa52-0c7b3715cde5
+
+	measure 'Late Handover Rate' = AVERAGE(OrderItems[seller_ship_late])
+		formatString: 0.0%
+		displayFolder: 4. Sellers
+		lineageTag: 0b528a47-aa8d-5fa0-8048-6032679e767f
+
+	measure 'Sales Share (Seller)' = DIVIDE([Item Sales], CALCULATE([Item Sales], REMOVEFILTERS(Sellers)))
+		formatString: 0.0%
+		displayFolder: 4. Sellers
+		lineageTag: 3ad3f007-22d6-5703-9a3b-0d7f9af99f89
+
+	measure 'Seller Count' = DISTINCTCOUNT(Sellers[seller_id])
+		formatString: #,0
+		displayFolder: 4. Sellers
+		lineageTag: 72f421b8-375c-5215-bacd-3473edfc4517
+
+	measure 'Items Sold' = CALCULATE(COUNTROWS(OrderItems), Orders[is_delivered] = 1)
+		formatString: #,0
+		displayFolder: 5. Products
+		lineageTag: b2f55705-9db8-5cdd-abdd-8ad116572eef
+
+	measure 'Categories Sold' = COUNTROWS(SUMMARIZE(CALCULATETABLE(OrderItems, Orders[is_delivered] = 1), Products[category]))
+		formatString: #,0
+		displayFolder: 5. Products
+		lineageTag: 1e6af05a-b8b6-5a18-b15e-64abb9ca4539
+
+	measure 'Products Sold' = CALCULATE(DISTINCTCOUNT(OrderItems[product_id]), Orders[is_delivered] = 1)
+		formatString: #,0
+		displayFolder: 5. Products
+		lineageTag: 9bcedecf-94a1-5dcb-bdba-7743579df354
+
+	measure 'Avg Item Price' = CALCULATE(AVERAGE(OrderItems[price]), Orders[is_delivered] = 1)
+		formatString: R$ #,0.00
+		displayFolder: 5. Products
+		lineageTag: e3560d5d-2985-5624-ac6d-92e1266ac467
+
+	measure 'Freight-to-Price Ratio' = DIVIDE(CALCULATE(SUM(OrderItems[freight_value]), Orders[is_delivered] = 1), CALCULATE(SUM(OrderItems[price]), Orders[is_delivered] = 1))
+		formatString: 0.0%
+		displayFolder: 5. Products
+		lineageTag: 44ab9cff-f2a4-5016-9bd2-1974981e1d91
+
+	measure 'Sales Share (Category)' = DIVIDE([Item Sales], CALCULATE([Item Sales], REMOVEFILTERS(Products)))
+		formatString: 0.0%
+		displayFolder: 5. Products
+		lineageTag: 0e907d62-606c-5dcd-b57d-f660811b3cec
+
+	measure 'Total Customers' = DISTINCTCOUNT(Orders[customer_unique_id])
+		formatString: #,0
+		displayFolder: 6. Customers
+		lineageTag: a33b536d-f988-5a84-b636-5a2d34bd7e44
+
+	measure 'New Customers' = CALCULATE([Total Customers], Orders[is_first_order] = 1)
+		formatString: #,0
+		displayFolder: 6. Customers
+		lineageTag: a1b0316d-a93e-59c2-9d23-cd2c830e2ea9
+
+	measure 'Returning Customers' = CALCULATE([Total Customers], Orders[customer_order_seq] > 1)
+		formatString: #,0
+		displayFolder: 6. Customers
+		lineageTag: 78d466d3-7a82-5f77-aca3-d07eaab128e6
+
+	measure 'Returning Customer Rate' = DIVIDE([Returning Customers], [Total Customers])
+		formatString: 0.00%
+		displayFolder: 6. Customers
+		lineageTag: d50a1e61-286f-51fa-83a6-99f33e3695b3
+
+	measure 'Orders per Customer' = DIVIDE([Total Orders], [Total Customers])
+		formatString: 0.000
+		displayFolder: 6. Customers
+		lineageTag: 2bb3f678-6637-562e-827c-4e4e80b89c89
+
+	measure 'Sales per Customer' = DIVIDE([Delivered Sales], [Total Customers])
+		formatString: R$ #,0.00
+		displayFolder: 6. Customers
+		lineageTag: 4868707e-040d-5ac8-9370-2f853bc5ef66
+
+	measure 'Customer Share' = DIVIDE([Total Customers], CALCULATE([Total Customers], REMOVEFILTERS(Customers[order_count_group], Customers[order_count_sort])))
+		formatString: 0.00%
+		displayFolder: 6. Customers
+		lineageTag: 8e75c764-42ff-5001-95e2-ada8aae406fa
+
+	measure 'Payment Value' = SUM(Payments[payment_value])
+		formatString: R$ #,0
+		displayFolder: 7. Payments
+		lineageTag: b093c191-e127-511e-b55d-58f840524343
+
+	measure 'Payment Transactions' = COUNTROWS(Payments)
+		formatString: #,0
+		displayFolder: 7. Payments
+		lineageTag: 6c4da5c7-2203-5250-9bc8-98ca28de9de9
+
+	measure 'Payment Value Share' = DIVIDE([Payment Value], CALCULATE([Payment Value], REMOVEFILTERS(Payments[payment_type])))
+		formatString: 0.0%
+		displayFolder: 7. Payments
+		lineageTag: 98a5ad25-3098-5b23-8062-56f437ad136c
+
+	measure 'Credit Card Share' = DIVIDE(CALCULATE([Payment Value], Payments[payment_type] = "Credit card"), [Payment Value])
+		formatString: 0.0%
+		displayFolder: 7. Payments
+		lineageTag: 72474f18-728f-5d4b-b305-7d35dfcbb88e
+
+	measure 'Avg Installments' = CALCULATE(AVERAGE(Payments[payment_installments]), Payments[payment_type] = "Credit card")
+		formatString: #,0.0
+		displayFolder: 7. Payments
+		lineageTag: 59c1cf42-3334-582e-a1b8-fc3535d88786
+
+	measure 'Installment Order Rate' = DIVIDE(CALCULATE([Total Orders], Orders[installments] > 1), [Total Orders])
+		formatString: 0.0%
+		displayFolder: 7. Payments
+		lineageTag: 0b9c8968-b9a0-5efa-9a98-68c69f10d61b
+
+	measure 'Voucher Order Rate' = DIVIDE(CALCULATE([Total Orders], Orders[uses_voucher] = 1), [Total Orders])
+		formatString: 0.0%
+		displayFolder: 7. Payments
+		lineageTag: 335362b5-0641-5cf9-b49c-55ef9f4eab1b
+
+	measure 'Credit Card Orders' = CALCULATE(DISTINCTCOUNT(Payments[order_id]), Payments[payment_type] = "Credit card")
+		formatString: #,0
+		displayFolder: 7. Payments
+		lineageTag: d07f092a-bf40-542e-9257-ba4dbb02ad74
+
+	measure 'Order Share (Installments)' = DIVIDE([Total Orders], CALCULATE([Total Orders], REMOVEFILTERS(Orders[installment_bucket], Orders[installment_sort])))
+		formatString: 0.0%
+		displayFolder: 7. Payments
+		lineageTag: be374788-bb27-5f4c-a3ed-6d336d433369
+
+	measure 'Total Orders Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Total Orders], _cur)
+			VAR _p = CALCULATE([Total Orders], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 1. Overview\YoY
+		lineageTag: a4815af4-483e-5f0e-b5a5-08b55fb50dc5
+
+	measure 'Total Orders Δ text' =
+			VAR d = ROUND([Total Orders Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 1. Overview\YoY
+		lineageTag: edd1ef37-b6ba-5ce3-9b67-71917a15b0e2
+
+	measure 'Total Orders Δ color' =
+			VAR d = ROUND([Total Orders Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 1. Overview\YoY
+		lineageTag: 3e5410f4-5eb9-5d05-9662-9f8448f28c2e
+
+	measure 'Delivered Orders Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Delivered Orders], _cur)
+			VAR _p = CALCULATE([Delivered Orders], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 1. Overview\YoY
+		lineageTag: 1374a640-8503-588e-961b-1b7a081cc86c
+
+	measure 'Delivered Orders Δ text' =
+			VAR d = ROUND([Delivered Orders Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 1. Overview\YoY
+		lineageTag: 277806ea-18e5-5925-88b1-9b950be19d6c
+
+	measure 'Delivered Orders Δ color' =
+			VAR d = ROUND([Delivered Orders Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 1. Overview\YoY
+		lineageTag: 98802bd8-e627-51e9-b063-6c09446e1370
+
+	measure 'Delivered Sales Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Delivered Sales], _cur)
+			VAR _p = CALCULATE([Delivered Sales], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 1. Overview\YoY
+		lineageTag: 34c2f5d6-311f-5c77-8610-5c25ca6de693
+
+	measure 'Delivered Sales Δ text' =
+			VAR d = ROUND([Delivered Sales Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 1. Overview\YoY
+		lineageTag: 776e4ecf-68be-5de5-84a3-2909f50fb469
+
+	measure 'Delivered Sales Δ color' =
+			VAR d = ROUND([Delivered Sales Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 1. Overview\YoY
+		lineageTag: 02811ff7-833e-5407-a047-a964a91b9232
+
+	measure 'Avg Order Value Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Order Value], _cur)
+			VAR _p = CALCULATE([Avg Order Value], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 1. Overview\YoY
+		lineageTag: a808b399-eb07-5ca3-8d31-286dc3e10f21
+
+	measure 'Avg Order Value Δ text' =
+			VAR d = ROUND([Avg Order Value Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 1. Overview\YoY
+		lineageTag: 572408d9-2e34-563a-9c3f-24c65f12c815
+
+	measure 'Avg Order Value Δ color' =
+			VAR d = ROUND([Avg Order Value Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 1. Overview\YoY
+		lineageTag: 2ecc7797-42ff-55db-8efc-b38dc8550293
+
+	measure 'Cancellation Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Cancellation Rate], _cur)
+			VAR _p = CALCULATE([Cancellation Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 1. Overview\YoY
+		lineageTag: 1a0a2f91-d730-5c65-881e-17500cca03a6
+
+	measure 'Cancellation Rate Δ text' =
+			VAR d = ROUND([Cancellation Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 1. Overview\YoY
+		lineageTag: f3ff07c9-2db0-5dfb-b420-4cc2fee750db
+
+	measure 'Cancellation Rate Δ color' =
+			VAR d = ROUND([Cancellation Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 1. Overview\YoY
+		lineageTag: df0c5219-44a6-5575-bfda-4d47a36cf0af
+
+	measure 'Avg Delivery Days Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Delivery Days], _cur)
+			VAR _p = CALCULATE([Avg Delivery Days], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.00
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 30e639e4-8cb0-5bfe-a011-de3946d29cc7
+
+	measure 'Avg Delivery Days Δ text' =
+			VAR d = ROUND([Avg Delivery Days Δ], 1)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0") & " days" & " vs same period " & (_y - 1))
+		displayFolder: 2. Delivery\YoY
+		lineageTag: fc94758d-a3cf-579c-8564-48ca12b69024
+
+	measure 'Avg Delivery Days Δ color' =
+			VAR d = ROUND([Avg Delivery Days Δ], 1)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 2. Delivery\YoY
+		lineageTag: c6b778d4-664e-5c3c-b093-49f61d9e6d72
+
+	measure 'On-Time Delivery Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([On-Time Delivery Rate], _cur)
+			VAR _p = CALCULATE([On-Time Delivery Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 9c31aecf-eede-592d-82ce-57bf1a8e89e2
+
+	measure 'On-Time Delivery Rate Δ text' =
+			VAR d = ROUND([On-Time Delivery Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 1c1be7ab-71be-52be-be1d-9efe42d50092
+
+	measure 'On-Time Delivery Rate Δ color' =
+			VAR d = ROUND([On-Time Delivery Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 2. Delivery\YoY
+		lineageTag: d7e97409-aed8-5c1e-b179-2e24bb91aef4
+
+	measure 'Avg Days Ahead of ETA Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Days Ahead of ETA], _cur)
+			VAR _p = CALCULATE([Avg Days Ahead of ETA], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.00
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 337545be-fd6e-5201-b8e4-cefb260bbc29
+
+	measure 'Avg Days Ahead of ETA Δ text' =
+			VAR d = ROUND([Avg Days Ahead of ETA Δ], 1)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0") & " days" & " vs same period " & (_y - 1))
+		displayFolder: 2. Delivery\YoY
+		lineageTag: fd7ee313-e07e-5f57-b23a-7c83a19d5bd0
+
+	measure 'Avg Days Ahead of ETA Δ color' =
+			VAR d = ROUND([Avg Days Ahead of ETA Δ], 1)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 429d6537-cc5e-548f-b276-f76a24389eb6
+
+	measure 'Avg Days Late Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Days Late], _cur)
+			VAR _p = CALCULATE([Avg Days Late], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.00
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 77bf4699-441c-5e5e-a9dc-c109427c87c8
+
+	measure 'Avg Days Late Δ text' =
+			VAR d = ROUND([Avg Days Late Δ], 1)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0") & " days" & " vs same period " & (_y - 1))
+		displayFolder: 2. Delivery\YoY
+		lineageTag: c8bab852-c8d8-5dcd-b933-e7b41bd62551
+
+	measure 'Avg Days Late Δ color' =
+			VAR d = ROUND([Avg Days Late Δ], 1)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 219a14a0-c975-5dda-a2df-47630e79178a
+
+	measure 'Freight-to-Value Ratio Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Freight-to-Value Ratio], _cur)
+			VAR _p = CALCULATE([Freight-to-Value Ratio], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 1bd42edb-32c6-55cc-82d3-6c8909526fd5
+
+	measure 'Freight-to-Value Ratio Δ text' =
+			VAR d = ROUND([Freight-to-Value Ratio Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 44c2f7df-029e-5d78-af9d-55cd3d1faca0
+
+	measure 'Freight-to-Value Ratio Δ color' =
+			VAR d = ROUND([Freight-to-Value Ratio Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 2. Delivery\YoY
+		lineageTag: 8cf8c61c-d693-5af7-bb12-16a6b8d40752
+
+	measure 'Avg Review Score Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Review Score], _cur)
+			VAR _p = CALCULATE([Avg Review Score], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.00
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 592b11e0-6c4b-5dfc-a22f-56ed809d209f
+
+	measure 'Avg Review Score Δ text' =
+			VAR d = ROUND([Avg Review Score Δ], 2)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.00") & " pts" & " vs same period " & (_y - 1))
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: fee396fa-56a7-5fe6-a61c-b8cf4bbee8da
+
+	measure 'Avg Review Score Δ color' =
+			VAR d = ROUND([Avg Review Score Δ], 2)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 3777e542-901a-5c9a-b565-b103b04dfe8c
+
+	measure '5-Star Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([5-Star Rate], _cur)
+			VAR _p = CALCULATE([5-Star Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 18a16c7a-d40c-5965-ae4a-1e346c8c6e58
+
+	measure '5-Star Rate Δ text' =
+			VAR d = ROUND([5-Star Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 12e1db23-9c4a-5b67-8046-634eb5342ae3
+
+	measure '5-Star Rate Δ color' =
+			VAR d = ROUND([5-Star Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: dcf34dbb-6455-5712-aef4-f166ef62ba9c
+
+	measure 'Negative Review Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Negative Review Rate], _cur)
+			VAR _p = CALCULATE([Negative Review Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: b750d7f0-6893-589a-b7f1-8ba10cbf75e8
+
+	measure 'Negative Review Rate Δ text' =
+			VAR d = ROUND([Negative Review Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: feea4305-a74c-5916-9a8d-4935b2c9c3f4
+
+	measure 'Negative Review Rate Δ color' =
+			VAR d = ROUND([Negative Review Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 3be635b7-c01c-5910-8984-d5557e969b90
+
+	measure 'Comment Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Comment Rate], _cur)
+			VAR _p = CALCULATE([Comment Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 735c9d0d-aad2-5022-b61b-e17080b2a25c
+
+	measure 'Comment Rate Δ text' =
+			VAR d = ROUND([Comment Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: cd2ff854-96b2-5811-b6a9-ddb00c0cc916
+
+	measure 'Comment Rate Δ color' =
+			VAR d = ROUND([Comment Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: cdf4474a-71e5-52ab-a0be-23a53ec0fd2c
+
+	measure 'Avg Score (Late Orders) Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Score (Late Orders)], _cur)
+			VAR _p = CALCULATE([Avg Score (Late Orders)], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.00
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 22b9b057-2429-5afc-9976-f413b548cff6
+
+	measure 'Avg Score (Late Orders) Δ text' =
+			VAR d = ROUND([Avg Score (Late Orders) Δ], 2)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.00") & " pts" & " vs same period " & (_y - 1))
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: fbf9cb5f-68e4-5a7c-bc44-3b2031dffeba
+
+	measure 'Avg Score (Late Orders) Δ color' =
+			VAR d = ROUND([Avg Score (Late Orders) Δ], 2)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 3. Customer Experience\YoY
+		lineageTag: 0a4702f0-086c-52f8-becd-469223d62913
+
+	measure 'Active Sellers Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Active Sellers], _cur)
+			VAR _p = CALCULATE([Active Sellers], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 4. Sellers\YoY
+		lineageTag: bd6e9a3c-5654-5cb0-9148-71d36cdf9d11
+
+	measure 'Active Sellers Δ text' =
+			VAR d = ROUND([Active Sellers Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 0ab3e1bb-27a9-5b3e-9413-204d240e0365
+
+	measure 'Active Sellers Δ color' =
+			VAR d = ROUND([Active Sellers Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 4. Sellers\YoY
+		lineageTag: f5fd871d-3c4e-5e1e-836b-6020c32335f6
+
+	measure 'Sales per Seller Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Sales per Seller], _cur)
+			VAR _p = CALCULATE([Sales per Seller], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 830dc98c-f593-547b-81aa-3c23ec8d1b6d
+
+	measure 'Sales per Seller Δ text' =
+			VAR d = ROUND([Sales per Seller Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 64c40e05-c1dd-5a1a-b193-fb21f3b300db
+
+	measure 'Sales per Seller Δ color' =
+			VAR d = ROUND([Sales per Seller Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 4778c332-f092-53cd-9b44-f8aee4f7e565
+
+	measure 'Top 10% Seller Share Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Top 10% Seller Share], _cur)
+			VAR _p = CALCULATE([Top 10% Seller Share], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 4. Sellers\YoY
+		lineageTag: eec831b1-898a-56f3-89b3-7f7508ff0fd3
+
+	measure 'Top 10% Seller Share Δ text' =
+			VAR d = ROUND([Top 10% Seller Share Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 63311702-d0bd-569e-a4d0-598f527beb52
+
+	measure 'Top 10% Seller Share Δ color' =
+			VAR d = ROUND([Top 10% Seller Share Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 4. Sellers\YoY
+		lineageTag: fcdee11b-a376-5ab7-b9e6-0d3857a12b68
+
+	measure 'Avg Seller Prep Days Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Seller Prep Days], _cur)
+			VAR _p = CALCULATE([Avg Seller Prep Days], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.00
+		displayFolder: 4. Sellers\YoY
+		lineageTag: c6141a49-5d64-50a0-bfc2-4647b2dbcb33
+
+	measure 'Avg Seller Prep Days Δ text' =
+			VAR d = ROUND([Avg Seller Prep Days Δ], 1)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0") & " days" & " vs same period " & (_y - 1))
+		displayFolder: 4. Sellers\YoY
+		lineageTag: e323d470-7f89-52bd-bad9-7194b84e979f
+
+	measure 'Avg Seller Prep Days Δ color' =
+			VAR d = ROUND([Avg Seller Prep Days Δ], 1)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 4. Sellers\YoY
+		lineageTag: ee017e05-b3c1-551c-81bc-fb94e7b88d88
+
+	measure 'Late Handover Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Late Handover Rate], _cur)
+			VAR _p = CALCULATE([Late Handover Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 4. Sellers\YoY
+		lineageTag: e22332cb-011d-5a89-876d-4ba8ee88afdd
+
+	measure 'Late Handover Rate Δ text' =
+			VAR d = ROUND([Late Handover Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 4. Sellers\YoY
+		lineageTag: c31673be-3345-51bc-b320-6f0a55d2b8b4
+
+	measure 'Late Handover Rate Δ color' =
+			VAR d = ROUND([Late Handover Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 148043c1-f357-5a15-b511-03eafd152416
+
+	measure 'Categories Sold Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Categories Sold], _cur)
+			VAR _p = CALCULATE([Categories Sold], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 5. Products\YoY
+		lineageTag: 27b30804-8705-5aad-b9c3-4bef5a5590c4
+
+	measure 'Categories Sold Δ text' =
+			VAR d = ROUND([Categories Sold Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 5. Products\YoY
+		lineageTag: a10594c4-b545-537a-9081-ce41b1470054
+
+	measure 'Categories Sold Δ color' =
+			VAR d = ROUND([Categories Sold Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 5. Products\YoY
+		lineageTag: 502c2fa5-a9b2-5efd-80d1-ec4883d26016
+
+	measure 'Products Sold Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Products Sold], _cur)
+			VAR _p = CALCULATE([Products Sold], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 5. Products\YoY
+		lineageTag: 9fe0b17b-30fc-5089-a1ae-9798267a713b
+
+	measure 'Products Sold Δ text' =
+			VAR d = ROUND([Products Sold Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 5. Products\YoY
+		lineageTag: fb11e451-624e-5e6c-a3e7-9f772377ee2c
+
+	measure 'Products Sold Δ color' =
+			VAR d = ROUND([Products Sold Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 5. Products\YoY
+		lineageTag: 8d41b3d9-bc33-5e68-8ed6-c3176b94932b
+
+	measure 'Items Sold Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Items Sold], _cur)
+			VAR _p = CALCULATE([Items Sold], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 5. Products\YoY
+		lineageTag: 907b9ff4-be86-5c18-b754-2cf67156b17a
+
+	measure 'Items Sold Δ text' =
+			VAR d = ROUND([Items Sold Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 5. Products\YoY
+		lineageTag: f5fc549c-6a53-5c4c-8b4d-f6c5cc883074
+
+	measure 'Items Sold Δ color' =
+			VAR d = ROUND([Items Sold Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 5. Products\YoY
+		lineageTag: 60908553-cbde-500c-a7d3-b7e1c915ea6b
+
+	measure 'Avg Item Price Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Item Price], _cur)
+			VAR _p = CALCULATE([Avg Item Price], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 5. Products\YoY
+		lineageTag: f03dc451-2727-5cce-bac5-60c3bb40e168
+
+	measure 'Avg Item Price Δ text' =
+			VAR d = ROUND([Avg Item Price Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 5. Products\YoY
+		lineageTag: 334dfb5b-db39-58f3-a6f9-67a87148602b
+
+	measure 'Avg Item Price Δ color' =
+			VAR d = ROUND([Avg Item Price Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 5. Products\YoY
+		lineageTag: ea7c2b50-eb41-53fd-817b-3f3d3aec5327
+
+	measure 'Freight-to-Price Ratio Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Freight-to-Price Ratio], _cur)
+			VAR _p = CALCULATE([Freight-to-Price Ratio], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 5. Products\YoY
+		lineageTag: 687e5389-90df-5679-93d2-36a66ea1cd07
+
+	measure 'Freight-to-Price Ratio Δ text' =
+			VAR d = ROUND([Freight-to-Price Ratio Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 5. Products\YoY
+		lineageTag: a1ad267a-aca2-5b3c-81af-834db68bf36f
+
+	measure 'Freight-to-Price Ratio Δ color' =
+			VAR d = ROUND([Freight-to-Price Ratio Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#F26F6F", "#C2FA5C")
+		displayFolder: 5. Products\YoY
+		lineageTag: e6b50d44-4613-5b8f-9a22-aff6b5a8c3dd
+
+	measure 'Total Customers Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Total Customers], _cur)
+			VAR _p = CALCULATE([Total Customers], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 6. Customers\YoY
+		lineageTag: a2e5e2d4-4d11-5960-a06f-71dc19e27e50
+
+	measure 'Total Customers Δ text' =
+			VAR d = ROUND([Total Customers Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 6. Customers\YoY
+		lineageTag: e654c0c5-f5ce-52b9-8e36-99d456ebc981
+
+	measure 'Total Customers Δ color' =
+			VAR d = ROUND([Total Customers Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 6. Customers\YoY
+		lineageTag: 2bf300db-fa88-5421-a18a-a8434fce6b71
+
+	measure 'New Customers Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([New Customers], _cur)
+			VAR _p = CALCULATE([New Customers], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 6. Customers\YoY
+		lineageTag: fc6ac1a5-c1ab-56da-9346-a3a0f0ab5bca
+
+	measure 'New Customers Δ text' =
+			VAR d = ROUND([New Customers Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 6. Customers\YoY
+		lineageTag: df66e4a7-3793-5ce2-8d71-c2bea0ec10e1
+
+	measure 'New Customers Δ color' =
+			VAR d = ROUND([New Customers Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 6. Customers\YoY
+		lineageTag: b552943d-81a5-574f-b474-6db968bae924
+
+	measure 'Returning Customer Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Returning Customer Rate], _cur)
+			VAR _p = CALCULATE([Returning Customer Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 6. Customers\YoY
+		lineageTag: abed56e5-901c-50b5-afdc-656dc54aecda
+
+	measure 'Returning Customer Rate Δ text' =
+			VAR d = ROUND([Returning Customer Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 6. Customers\YoY
+		lineageTag: cd091646-be6c-5c09-89ba-5db8247cca3f
+
+	measure 'Returning Customer Rate Δ color' =
+			VAR d = ROUND([Returning Customer Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 6. Customers\YoY
+		lineageTag: 2327cfb7-6093-5985-a42e-8ba304f54050
+
+	measure 'Orders per Customer Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Orders per Customer], _cur)
+			VAR _p = CALCULATE([Orders per Customer], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 6. Customers\YoY
+		lineageTag: 38fa9714-4158-51f6-9184-d25ebbd4acd6
+
+	measure 'Orders per Customer Δ text' =
+			VAR d = ROUND([Orders per Customer Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 6. Customers\YoY
+		lineageTag: 9298388e-fc98-5204-8c66-e87e4a65307f
+
+	measure 'Orders per Customer Δ color' =
+			VAR d = ROUND([Orders per Customer Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 6. Customers\YoY
+		lineageTag: 46931fcf-bffa-5b9b-9991-bffb12169148
+
+	measure 'Sales per Customer Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Sales per Customer], _cur)
+			VAR _p = CALCULATE([Sales per Customer], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 6. Customers\YoY
+		lineageTag: b5877ac4-76a0-532f-95b7-553a51840083
+
+	measure 'Sales per Customer Δ text' =
+			VAR d = ROUND([Sales per Customer Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 6. Customers\YoY
+		lineageTag: caacdbca-680b-5b99-ad56-f5e61207fdbe
+
+	measure 'Sales per Customer Δ color' =
+			VAR d = ROUND([Sales per Customer Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 6. Customers\YoY
+		lineageTag: a978736a-134b-5a40-bdc3-8412181d3e7a
+
+	measure 'Payment Value Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Payment Value], _cur)
+			VAR _p = CALCULATE([Payment Value], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 7. Payments\YoY
+		lineageTag: 73dbfb50-9a64-517b-be7a-8365d46368fe
+
+	measure 'Payment Value Δ text' =
+			VAR d = ROUND([Payment Value Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 7. Payments\YoY
+		lineageTag: 11da3798-e520-5f51-900a-0bd790019d67
+
+	measure 'Payment Value Δ color' =
+			VAR d = ROUND([Payment Value Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 7. Payments\YoY
+		lineageTag: 0733d5b5-f964-5f63-b761-37c8de0ece1b
+
+	measure 'Credit Card Share Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Credit Card Share], _cur)
+			VAR _p = CALCULATE([Credit Card Share], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 7. Payments\YoY
+		lineageTag: c58adc03-7d03-5bd9-8a86-6cc1c100331b
+
+	measure 'Credit Card Share Δ text' =
+			VAR d = ROUND([Credit Card Share Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 7. Payments\YoY
+		lineageTag: 316ba824-8df1-5d32-a7bb-5a92308d078f
+
+	measure 'Credit Card Share Δ color' =
+			VAR d = ROUND([Credit Card Share Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 7. Payments\YoY
+		lineageTag: 39c58636-014b-546a-9f04-88631940ca83
+
+	measure 'Avg Installments Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Avg Installments], _cur)
+			VAR _p = CALCULATE([Avg Installments], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 7. Payments\YoY
+		lineageTag: 5b00de74-36e5-5ea0-bd45-0af4d62c6ec7
+
+	measure 'Avg Installments Δ text' =
+			VAR d = ROUND([Avg Installments Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 7. Payments\YoY
+		lineageTag: 5cfb8913-97c2-513d-9160-0e743ace2fe6
+
+	measure 'Avg Installments Δ color' =
+			VAR d = ROUND([Avg Installments Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 7. Payments\YoY
+		lineageTag: 62fb497d-c778-5d5d-8e15-654cb7696952
+
+	measure 'Installment Order Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Installment Order Rate], _cur)
+			VAR _p = CALCULATE([Installment Order Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 7. Payments\YoY
+		lineageTag: 7c1e3bb8-660e-54f6-a99c-884e6c6776c7
+
+	measure 'Installment Order Rate Δ text' =
+			VAR d = ROUND([Installment Order Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 7. Payments\YoY
+		lineageTag: 50e136f6-3d0b-55d9-a933-00bbff49c3c2
+
+	measure 'Installment Order Rate Δ color' =
+			VAR d = ROUND([Installment Order Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 7. Payments\YoY
+		lineageTag: ccd3ae78-9d61-5ba4-b6e0-70ae511ddccd
+
+	measure 'Voucher Order Rate Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Voucher Order Rate], _cur)
+			VAR _p = CALCULATE([Voucher Order Rate], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), _c - _p)
+		formatString: 0.0%
+		displayFolder: 7. Payments\YoY
+		lineageTag: 61f02cd0-e539-551c-8c74-304658386cb2
+
+	measure 'Voucher Order Rate Δ text' =
+			VAR d = ROUND([Voucher Order Rate Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d) * 100, "0.0") & " pp" & " vs same period " & (_y - 1))
+		displayFolder: 7. Payments\YoY
+		lineageTag: 4ab01f5d-d06b-5a62-9d69-4a43e3162ba8
+
+	measure 'Voucher Order Rate Δ color' =
+			VAR d = ROUND([Voucher Order Rate Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#D0D0D0", "#D0D0D0")
+		displayFolder: 7. Payments\YoY
+		lineageTag: 8255759d-5da0-5caa-a7d2-2c31c039e383
+
+	measure 'Item Sales Δ' =
+			VAR _y = MAX('Date'[Year])
+			VAR _cur = CALCULATETABLE(VALUES('Date'[Date]), KEEPFILTERS('Date'[Year] = _y))
+			VAR _from = EDATE(MINX(_cur, [Date]), -12)
+			VAR _to = EDATE(MAXX(_cur, [Date]), -12)
+			VAR _c = CALCULATE([Item Sales], _cur)
+			VAR _p = CALCULATE([Item Sales], REMOVEFILTERS('Date'), DATESBETWEEN('Date'[Date], _from, _to))
+			RETURN IF(NOT ISBLANK(_c) && NOT ISBLANK(_p), DIVIDE(_c - _p, _p))
+		formatString: 0.0%
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 0c184138-6336-5325-b5ed-36231064c999
+
+	measure 'Item Sales Δ text' =
+			VAR d = ROUND([Item Sales Δ], 3)
+			VAR _y = MAX('Date'[Year])
+			RETURN IF(ISBLANK(d), "No prior-year data for this period",
+			    IF(d > 0, "▲ ", IF(d < 0, "▼ ", "■ ")) & FORMAT(ABS(d), "0.0%") & " vs same period " & (_y - 1))
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 0625864d-b355-523e-ab6a-c89990dfe912
+
+	measure 'Item Sales Δ color' =
+			VAR d = ROUND([Item Sales Δ], 3)
+			RETURN SWITCH(TRUE(), ISBLANK(d) || d = 0, "#8C8C8C", d > 0, "#C2FA5C", "#F26F6F")
+		displayFolder: 4. Sellers\YoY
+		lineageTag: 50204bb4-e9ab-5e90-9c47-24059aceb51d
+
+	column Dummy
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6eb13670-9229-5a9a-aeac-e3a5766a48f5
+		summarizeBy: none
+		sourceColumn: Dummy
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				    Source = #table(type table [Dummy = Int64.Type], {})
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

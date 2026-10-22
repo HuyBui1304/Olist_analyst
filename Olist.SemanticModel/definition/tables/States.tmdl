@@ -1,0 +1,51 @@
+table States
+	lineageTag: 9a6d2c67-5a4f-5beb-b108-d5e8d22ff64f
+
+	column state
+		dataType: string
+		lineageTag: a1d5ffa0-1e75-5742-a863-4c2c48822912
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column state_name
+		dataType: string
+		lineageTag: dfa79d5d-b602-5113-96a6-bfe66563ee84
+		summarizeBy: none
+		sourceColumn: state_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: a0030f9b-2fe5-5ef8-8c77-4f38d2f0bc62
+		summarizeBy: none
+		sourceColumn: region
+		sortByColumn: region_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column region_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a8089e8a-3090-5b35-ad66-8d9ffb143825
+		summarizeBy: none
+		sourceColumn: region_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	partition States = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_state.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Nulls = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"state", "state_name", "region"}),
+				    Typed = Table.TransformColumnTypes(Nulls, {{"state", type text}, {"state_name", type text}, {"region", type text}, {"region_sort", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

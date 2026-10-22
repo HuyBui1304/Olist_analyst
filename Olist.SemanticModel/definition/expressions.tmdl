@@ -1,0 +1,5 @@
+expression DataFolder = "Y:\Desktop\Olist_analyst\data_model\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: dfebb003-a3f6-504c-b81a-8a22750c58da
+
+	annotation PBI_ResultType = Text
+

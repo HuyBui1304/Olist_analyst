@@ -1,0 +1,29 @@
+relationship 21dba2fe-b431-5c22-a46e-fa4dc5cbce92
+	fromColumn: Orders.purchase_date
+	toColumn: Date.Date
+
+relationship c77e7edf-b6bb-56cc-8314-6bcc89a5fd9e
+	fromColumn: Orders.customer_state
+	toColumn: States.state
+
+relationship 5706baf6-a7d3-5534-b6ce-4b619e35db9e
+	fromColumn: Orders.customer_unique_id
+	toColumn: Customers.customer_unique_id
+
+relationship 2d079b69-6312-53b2-89d1-3ff1decd933a
+	crossFilteringBehavior: bothDirections
+	fromColumn: OrderItems.order_id
+	toColumn: Orders.order_id
+
+relationship 2e0037b0-569b-5b3e-b583-81c0098be74a
+	fromColumn: OrderItems.product_id
+	toColumn: Products.product_id
+
+relationship f2c94333-9902-528d-913b-609436a62410
+	fromColumn: OrderItems.seller_id
+	toColumn: Sellers.seller_id
+
+relationship b80723b7-a09b-5a62-8cf0-d1360f2c7e2e
+	fromColumn: Payments.order_id
+	toColumn: Orders.order_id
+

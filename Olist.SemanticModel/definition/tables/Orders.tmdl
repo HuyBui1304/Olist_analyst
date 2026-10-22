@@ -1,0 +1,436 @@
+table Orders
+	lineageTag: 56d0c4be-e038-57fd-b571-c7755e8eb79e
+
+	column order_id
+		dataType: string
+		isHidden
+		lineageTag: e74aa9eb-43eb-5b9f-b251-1d7b6322776f
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_unique_id
+		dataType: string
+		isHidden
+		lineageTag: 4b522cf1-40d2-5b1b-8d32-e80df39af6f9
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_state
+		dataType: string
+		isHidden
+		lineageTag: 433be81c-1798-59ee-8f22-3e0555aa39cd
+		summarizeBy: none
+		sourceColumn: customer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_city
+		dataType: string
+		lineageTag: 50bcbc61-708c-58c7-a458-5dd031dda731
+		summarizeBy: none
+		sourceColumn: customer_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_status
+		dataType: string
+		lineageTag: d54318fc-f52f-5c54-a33e-2ae726503db8
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column status_group
+		dataType: string
+		lineageTag: 2510aff3-f0b8-55e1-a3f3-91318d047e76
+		summarizeBy: none
+		sourceColumn: status_group
+		sortByColumn: status_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column status_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 226ad419-c280-5772-b255-cd56dc73dee2
+		summarizeBy: none
+		sourceColumn: status_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchase_date
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy
+		lineageTag: fe817edd-1899-5684-ad12-51cf3e21edb3
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column purchase_ts
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 6de26ee4-3033-5773-b149-6ede723c19e6
+		summarizeBy: none
+		sourceColumn: purchase_ts
+
+		annotation SummarizationSetBy = Automatic
+
+	column approved_ts
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: d96b6427-95a1-5256-ad28-7856754bebc5
+		summarizeBy: none
+		sourceColumn: approved_ts
+
+		annotation SummarizationSetBy = Automatic
+
+	column carrier_ts
+		dataType: dateTime
+		isHidden
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: 1c759c84-a77c-5827-9484-c09a28a3a24a
+		summarizeBy: none
+		sourceColumn: carrier_ts
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivered_ts
+		dataType: dateTime
+		formatString: dd/MM/yyyy HH:mm
+		lineageTag: db7c9257-ab09-5513-92a6-edd12bbf6734
+		summarizeBy: none
+		sourceColumn: delivered_ts
+
+		annotation SummarizationSetBy = Automatic
+
+	column estimated_date
+		dataType: dateTime
+		formatString: dd/MM/yyyy
+		lineageTag: ac0d4ebb-160e-58df-980d-ec83d1e1075f
+		summarizeBy: none
+		sourceColumn: estimated_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column is_delivered
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 58a225f6-bddd-53ce-a4d2-fcd6100d8132
+		summarizeBy: none
+		sourceColumn: is_delivered
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_canceled
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d24e0a90-6d62-5bc2-bd47-4d20edb90575
+		summarizeBy: none
+		sourceColumn: is_canceled
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_items
+		dataType: int64
+		formatString: 0
+		lineageTag: cea275a2-03d9-5b05-8883-9b7ac6b8478f
+		summarizeBy: none
+		sourceColumn: n_items
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_products
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9a56fc50-66c1-522b-9514-67d4a05c4817
+		summarizeBy: none
+		sourceColumn: n_products
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_sellers
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5714a90b-d432-51f0-b5a0-2d7293bebafb
+		summarizeBy: none
+		sourceColumn: n_sellers
+
+		annotation SummarizationSetBy = Automatic
+
+	column items_value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 00a13f20-2448-52af-a79b-4a21f64c241d
+		summarizeBy: sum
+		sourceColumn: items_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column freight_value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 8bf31028-f2e2-5c07-a0b3-93831539112a
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 0179c005-631a-5edb-b61b-73609392ef96
+		summarizeBy: sum
+		sourceColumn: order_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: c2a4ca1c-6b21-50e3-a40f-d00874bcb805
+		summarizeBy: sum
+		sourceColumn: payment_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_type_main
+		dataType: string
+		lineageTag: 63deebc0-2889-524a-8654-1298a94d71c1
+		summarizeBy: none
+		sourceColumn: payment_type_main
+
+		annotation SummarizationSetBy = Automatic
+
+	column installments
+		dataType: int64
+		formatString: 0
+		lineageTag: 63c62024-f6bc-5168-9e10-542299198ad9
+		summarizeBy: none
+		sourceColumn: installments
+
+		annotation SummarizationSetBy = Automatic
+
+	column installment_bucket
+		dataType: string
+		lineageTag: 576eb4e1-8bad-5a47-ae30-b2ae1872a409
+		summarizeBy: none
+		sourceColumn: installment_bucket
+		sortByColumn: installment_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column installment_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 45103108-7a2d-5b9f-827b-09250af05001
+		summarizeBy: none
+		sourceColumn: installment_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column uses_voucher
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: dc37b548-cb7a-5499-b58d-58859318c3a9
+		summarizeBy: none
+		sourceColumn: uses_voucher
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_score
+		dataType: int64
+		formatString: 0
+		lineageTag: f0080c85-3200-5f3f-88c0-84bcf56d6ce9
+		summarizeBy: none
+		sourceColumn: review_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_label
+		dataType: string
+		lineageTag: 0fd62d3e-981b-5e78-b110-f50694deb0cd
+		summarizeBy: none
+		sourceColumn: review_label
+		sortByColumn: review_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column has_review_comment
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4aa44802-f5df-5fd0-84a8-86523a146590
+		summarizeBy: none
+		sourceColumn: has_review_comment
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_sentiment
+		dataType: string
+		lineageTag: a86b96e0-8dbe-5ec2-bece-b6b5ef50ef76
+		summarizeBy: none
+		sourceColumn: review_sentiment
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_days
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 0872eec4-9910-57a2-9cfe-cecac8f58e40
+		summarizeBy: none
+		sourceColumn: delivery_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column approval_hours
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 09f750d5-d7f8-5aea-b124-dce5f99bd725
+		summarizeBy: none
+		sourceColumn: approval_hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column handling_days
+		dataType: double
+		formatString: #,0.00
+		lineageTag: be2ca997-70c9-5827-bd29-528680d08ab0
+		summarizeBy: none
+		sourceColumn: handling_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column transit_days
+		dataType: double
+		formatString: #,0.00
+		lineageTag: f98a70f1-7ee8-5dc1-8590-a4fc6e36a6cb
+		summarizeBy: none
+		sourceColumn: transit_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column estimated_days
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 7d2ec7ed-869c-519a-8e31-3287aae42ffe
+		summarizeBy: none
+		sourceColumn: estimated_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column delay_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 9d207b82-1ee8-5494-8660-c50df9143ae6
+		summarizeBy: none
+		sourceColumn: delay_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_late
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9ab21e96-ce37-57a6-ae75-66bed09e41d6
+		summarizeBy: none
+		sourceColumn: is_late
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_bucket
+		dataType: string
+		lineageTag: 65e8a52e-9faf-511c-af09-73c2826fd421
+		summarizeBy: none
+		sourceColumn: delivery_bucket
+		sortByColumn: delivery_bucket_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_bucket_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 060c0c56-188e-58fb-ad76-cd5f23cebc7d
+		summarizeBy: none
+		sourceColumn: delivery_bucket_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column delay_bucket
+		dataType: string
+		lineageTag: 71d2f297-6dff-555d-9a50-90a9a52f0f63
+		summarizeBy: none
+		sourceColumn: delay_bucket
+		sortByColumn: delay_bucket_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column delay_bucket_sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b7b03452-788e-547b-a14b-2e2a7a20ff35
+		summarizeBy: none
+		sourceColumn: delay_bucket_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchase_hour
+		dataType: int64
+		formatString: 0
+		lineageTag: 379fd41c-5628-5066-9ef3-929d4eaad31c
+		summarizeBy: none
+		sourceColumn: purchase_hour
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_order_seq
+		dataType: int64
+		formatString: 0
+		lineageTag: 369fba28-5957-53ef-a783-703c1c3fbdae
+		summarizeBy: none
+		sourceColumn: customer_order_seq
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_first_order
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2534a736-0b44-538b-bbff-e924b5ab8ef5
+		summarizeBy: none
+		sourceColumn: is_first_order
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_orders.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Nulls = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, {"order_id", "customer_unique_id", "customer_state", "customer_city", "order_status", "status_group", "payment_type_main", "installment_bucket", "review_label", "review_sentiment", "delivery_bucket", "delay_bucket"}),
+				    Typed = Table.TransformColumnTypes(Nulls, {{"order_id", type text}, {"customer_unique_id", type text}, {"customer_state", type text}, {"customer_city", type text}, {"order_status", type text}, {"status_group", type text}, {"status_sort", Int64.Type}, {"purchase_date", type date}, {"purchase_ts", type datetime}, {"approved_ts", type datetime}, {"carrier_ts", type datetime}, {"delivered_ts", type datetime}, {"estimated_date", type date}, {"is_delivered", Int64.Type}, {"is_canceled", Int64.Type}, {"n_items", Int64.Type}, {"n_products", Int64.Type}, {"n_sellers", Int64.Type}, {"items_value", type number}, {"freight_value", type number}, {"order_value", type number}, {"payment_value", type number}, {"payment_type_main", type text}, {"installments", Int64.Type}, {"installment_bucket", type text}, {"installment_sort", Int64.Type}, {"uses_voucher", Int64.Type}, {"review_score", Int64.Type}, {"review_label", type text}, {"has_review_comment", Int64.Type}, {"review_sentiment", type text}, {"delivery_days", type number}, {"approval_hours", type number}, {"handling_days", type number}, {"transit_days", type number}, {"estimated_days", type number}, {"delay_days", Int64.Type}, {"is_late", Int64.Type}, {"delivery_bucket", type text}, {"delivery_bucket_sort", Int64.Type}, {"delay_bucket", type text}, {"delay_bucket_sort", Int64.Type}, {"purchase_hour", Int64.Type}, {"customer_order_seq", Int64.Type}, {"is_first_order", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

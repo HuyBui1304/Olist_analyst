@@ -1,0 +1,11 @@
+# Power BI (cache.abf chứa toàn bộ dữ liệu đã nạp)
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Dữ liệu
+*.csv
+data_model/
+
+# macOS / Python
+.DS_Store
+__pycache__/
